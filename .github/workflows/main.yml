@@ -1,59 +1,66 @@
-name: update-project-Access
-run-name: update-project-Access ${{ inputs.realmtype }} ${{ inputs.project-names }} ${{ inputs.ad-group-name }}
-on: 
+name: Custom-Access-Manager
+
+on:
   workflow_dispatch:
     inputs:
-      project-names:
-        description: Project Name as comma seperated
-        type: string
-        required: true
       realmtype:
-        description: select the realm type
+        description: 'Realm type (e.g. dev, prod)'
         type: choice
         options:
           - liam-test
           - liam-us
           - liam-eu
           - liam-apac
-      ad-group-name:
-        description: Provide the Ad Group/JDA Delivers ID
+      project-name:
+        description: 'Project Name'
         type: string
-        default: ""
-      project-access:
-        description: 'Update Project access'
+        required: true
+      user-id:
+        description: 'User or Group Identifier'
+        type: string
+        required: true
+      add:
+        description: 'Perform Add Operation'
         type: boolean
-        required: false
-        default: true
-      key-valut-acess:
-        description: 'update key-valut acess'
+        default: false
+      status:
+        description: 'Perform Status Check'
         type: boolean
-        required: false
-        default: true
-      storage-account-acess:
-        description: 'update storage account acess'
+        default: false
+      remove:
+        description: 'Perform Remove Operation'
         type: boolean
-        required: false
-        default: true
+        default: false
+      blocks:
+        description: 'Get Blocked Users/Resources'
+        type: boolean
+        default: false
+
 jobs:
-  AD_Group_updation:
+  custom_access:
     runs-on: ubuntu-latest
-    env:
-      PYTHONPATH: "${{ github.workspace }}/etoe-sol-cicd-e2e/.github/utils"
+
     steps:
-      - name: Summarize Input Parameters
-        run: (echo -ne "**Input parameters:**\n|Parameter|Value|\n|---|---|\n|Workflow Branch|${GITHUB_REF#refs/heads/}|\n" && echo '${{ toJson(inputs) }}' | jq -r 'to_entries[] | "|\(.key)|\(.value)|"') >> ${GITHUB_STEP_SUMMARY}
-      - name: Clone cicd-e2e repo
+      - name: Checkout Code
         uses: actions/checkout@v4
-        with:
-          path: etoe-sol-cicd-e2e
-      - name: Install dependencies
+
+      - name: Install Python dependencies
         run: |
-          pip install -r etoe-sol-cicd-e2e/.github/utils/requirements.txt
+          pip install -r .github/utils/requirements.txt
+
+      - name: Add Access
+        if: ${{ inputs.add }}
+        run: |
+          python .github/utils/add.py ${{ inputs.realmtype }} ${{ inputs.project-name }} ${{ inputs.user-id }}
+
+      - name: Check Status
+        if: ${{ inputs.status }}
+        run: |
+          python .github/utils/status.py ${{ inputs.realmtype }} ${{ inputs.project-name }} ${{ inputs.user-id }}
+
+      - name: Remove Access
+        if: ${{ inputs.remove }}
+        run: |
+          python .github/utils/remove.py ${{ inputs.realmtype }} ${{ inputs.project-name }} ${{ inputs.user-id }}
 
 
-
-      
-
-    
-       
-       
