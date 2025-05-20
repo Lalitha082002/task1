@@ -34,6 +34,11 @@ on:
         type: boolean
         required: false
         default: true
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo"Sample run"
     
        
        
