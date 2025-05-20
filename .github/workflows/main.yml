@@ -1,0 +1,39 @@
+name: update-project-Access
+run-name: update-project-Access ${{ inputs.realmtype }} ${{ inputs.project-names }} ${{ inputs.ad-group-name }}
+on: 
+  workflow_dispatch:
+    inputs:
+      project-names:
+        description: Project Name as comma seperated
+        type: string
+        required: true
+      realmtype:
+        description: select the realm type
+        type: choice
+        options:
+          - liam-test
+          - liam-us
+          - liam-eu
+          - liam-apac
+      ad-group-name:
+        description: Provide the Ad Group/JDA Delivers ID
+        type: string
+        default: ""
+      project-access:
+        description: 'Update Project access'
+        type: boolean
+        required: false
+        default: true
+      key-valut-acess:
+        description: 'update key-valut acess'
+        type: boolean
+        required: false
+        default: true
+      storage-account-acess:
+        description: 'update storage account acess'
+        type: boolean
+        required: false
+        default: true
+    
+       
+       
