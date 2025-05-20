@@ -35,10 +35,25 @@ on:
         required: false
         default: true
 jobs:
-  test:
-    runs-on: ubuntu-latest
+  AD_Group_updation:
+    runs-on: az-${{ inputs.realmtype == 'liam-test' && 'dev' || 'prod' }}-ubuntu-latest
+    env:
+      PYTHONPATH: "${{ github.workspace }}/etoe-sol-cicd-e2e/.github/utils"
     steps:
-      - run: echo"Sample run"
+      - name: Summarize Input Parameters
+        run: (echo -ne "**Input parameters:**\n|Parameter|Value|\n|---|---|\n|Workflow Branch|${GITHUB_REF#refs/heads/}|\n" && echo '${{ toJson(inputs) }}' | jq -r 'to_entries[] | "|\(.key)|\(.value)|"') >> ${GITHUB_STEP_SUMMARY}
+      - name: Clone cicd-e2e repo
+        uses: actions/checkout@v4
+        with:
+          path: etoe-sol-cicd-e2e
+      - name: Install dependencies
+        run: |
+          pip install -r etoe-sol-cicd-e2e/.github/utils/requirements.txt
+
+
+
+      
+
     
        
        
